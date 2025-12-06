@@ -1,1 +1,1 @@
-clang++ -std=c++20 ./2025/5-2.cpp -o exe && ./exe
+clang++ -std=c++20 ./2025/6-2.cpp -o exe && ./exe
