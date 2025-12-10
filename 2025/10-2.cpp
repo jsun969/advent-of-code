@@ -1,10 +1,29 @@
-// WIP brute force TLE
+// GAVE UP too slow with kinda memo
 
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 using namespace std;
 
-constexpr int TRY = 99999;
+constexpr int TRY = 99;
+
+vector<int> strToVec(string s) {
+	vector<int> res;
+	for (auto ch : s) {
+		res.push_back(ch - '0');
+	}
+	return res;
+}
+
+string vecToStr(vector<int> vec) {
+	string s = "";
+	for (auto v : vec) {
+		s += to_string(v);
+	}
+	return s;
+}
 
 int soln(const vector<vector<int>>& buttons, const vector<int>& target) {
 	cout << "Target: ";
@@ -13,34 +32,49 @@ int soln(const vector<vector<int>>& buttons, const vector<int>& target) {
 	}
 	cout << endl;
 
-	const int LEN = target.size();
 	const int N = buttons.size();
 
-	function<bool(int, int, vector<int>)> dfs = [&](int idx, int cnt, vector<int> cur) -> bool {
-		for (auto n : cur) {
-			if (n < 0) return false;
-		}
-		if (cnt == 0) {
-			for (auto n : cur) {
-				if (n != 0) return false;
-			}
-			return true;
-		}
-		for (auto ix : buttons[idx]) {
-			cur[ix]--;
-		}
-		bool res = false;
-		for (int i = 0; i < N; i++) {
-			res = dfs(i, cnt - 1, cur) || res;
-		}
-		return res;
-	};
-
+	string initKey(N, '0');
+	unordered_map<string, vector<int>> dp { { initKey, target } };
 	for (int i = 1; i <= TRY; i++) {
 		cout << "Trying: " << i << endl;
-		if (dfs(0, i, target)) {
-			return i;
+		unordered_map<string, vector<int>> newDp;
+		for (auto [k, v] : dp) {
+			auto kVec = strToVec(k);
+			for (int j = 0; j < N; j++) {
+				auto b = buttons[j];
+				auto newV = v;
+				bool invalid = false;
+				for (auto idx : b) {
+					auto n = newV[idx] - 1;
+					newV[idx] = n;
+					if (n < 0) {
+						invalid = true;
+					}
+				}
+				if (invalid) continue;
+
+				auto newKVec = kVec;
+				newKVec[j]++;
+
+				bool ok = true;
+				for (auto e : newV) {
+					if (e != 0) ok = false;
+				}
+				if (ok) return i;
+
+				string newK = vecToStr(newKVec);
+				newDp.insert({ newK, newV });
+
+				//===== DEBUG =====
+				// cout << newK << ": ";
+				// for (auto e : newV) {
+				// 	cout << e << ' ';
+				// }
+				// cout << endl;
+			}
 		}
+		dp = newDp;
 	}
 	return -1;
 }
