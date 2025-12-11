@@ -1,1 +1,1 @@
-clang++ -std=c++20 -Wall -Wextra ./2025/10-2.cpp -o exe && ./exe
+clang++ -std=c++20 -Wall -Wextra ./2025/11-2.cpp -o exe && ./exe
